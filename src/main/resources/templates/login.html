@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Login Page</title>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+ 	<div class="form-container">
+ 	
+ 	
+ 	<div class="row">
+ 		 <div class="col-sm-4 col-sm-offset-4">
+ 		 <h1>Please Login</h1>
+ 		 <form method="POST" id="login_form" class="form-horizontal" action="oauth/token?client_id=devglan-client&client_secret=devgan-secret">
+	
+
+		<div class="row">
+			<div class="form-group col-md-12">
+				<label class="col-md-3 control-lable" for="firstName">Username</label>
+				<div class="col-md-9">
+					<input type="text" path="username" name="username" class="form-control input-sm"/>
+					<div class="has-error">
+						<form:errors path="firstName" class="help-inline"/>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="form-group col-md-12">
+				<label class="col-md-3 control-lable" for="lastName">Password</label>
+				<div class="col-md-9">
+					<input type="password" path="password"  name="password" class="form-control input-sm"/>
+					<div class="has-error">
+						<form:errors path="lastName" class="help-inline"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<input type="hidden" path="password"  name="grant_type" value="password" class="form-control input-sm"/>
+
+
+		<div class="row">
+			<div class="form-actions col-md-4 col-md-offset-8">
+				<input type="submit" value="Register" class="btn btn-primary btn-sm">
+			</div>
+		</div>
+		</form>
+ 		 </div>
+ 	</div>
+	
+	</div>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript">
+	$("#login_form").submit(function(e){
+		e.preventDefault();
+		alert(btoa('devglan-client:devgan-secret'));
+		var formData = jQuery(this).serialize();
+		$.ajax({
+			type: "post",
+			url:"oauth/token",
+			headers: {
+		        'Authorization':'Basic '+ btoa('devglan-client:devglan-secret'),
+		    },
+			data: formData,
+			dataType:"json",
+			success:function(data){
+				console.log(data.access_token);
+			}
+		})
+	})
+</script>
+</html>

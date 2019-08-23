@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 //import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.brains.libraryapp.models.CustomUserDetails;
 import com.brains.libraryapp.models.User;
 import com.brains.libraryapp.repositories.UserRepository;
 import com.brains.libraryapp.services.UserService;
@@ -28,11 +29,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		if(user == null){
 			throw new UsernameNotFoundException("Invalid username or password.");
 		}
-		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthority());
-	}
-
-	private List<SimpleGrantedAuthority> getAuthority() {
-		return Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+		return new CustomUserDetails(user);
 	}
 
 	public List<User> findAll() {

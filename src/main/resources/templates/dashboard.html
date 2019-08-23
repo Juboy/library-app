@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Dashboard</title>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+	<p th:text="${sess.accessToken}"></p>
+	<p th:text="${user}"></p>
+	
+	<ul th:each="user: ${allUsers}">
+		<li th:text="${user.username}"></li>
+	</ul>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</html>

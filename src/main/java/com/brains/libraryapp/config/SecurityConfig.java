@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+
 import javax.annotation.Resource;
 
 @Configuration
@@ -72,4 +73,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         bean.setOrder(0);
         return bean;
     }
+    
 }

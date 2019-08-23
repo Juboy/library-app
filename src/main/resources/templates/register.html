@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 		<meta charset="ISO-8859-1">
-		<title>Ventura - Login</title>
+		<title>Ventura - Register</title>
 
 		<link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
 
@@ -15,8 +15,10 @@
 		<!-- Main CSS -->
         <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body>
- 	    <div class="main-wrapper login-body">
+ <body>
+	
+		<!-- Main Wrapper -->
+        <div class="main-wrapper login-body">
             <div class="login-wrapper">
             	<div class="container">
                 	<div class="loginbox">
@@ -25,42 +27,53 @@
                         </div>
                         <div class="login-right">
 							<div class="login-right-wrap">
-								<h1>Login</h1>
-								<p class="account-subtitle">Access to your dashboard</p>
+								<h1>Register</h1>
+								<p class="account-subtitle">Access to our dashboard</p>
 								
 								<!-- Form -->
-								<form method="POST" id="login_form" class="form-horizontal">
+								<form th:object="${user}">
 									<div class="form-group">
-										<input class="form-control" name="username" type="text" placeholder="Username">
+										<input class="form-control" type="text" name="username" placeholder="username">
+										<p style="color:red" th:if="${#fields.hasErrors('username')}" th:error="*{username}"></p>
 									</div>
 									<div class="form-group">
-										<input class="form-control" name="password" type="password" placeholder="Password">
+										<input class="form-control" type="text" name="address" placeholder="address">
+										<p style="color:red" th:if="${#fields.hasErrors('address')}" th:error="*{address}"></p>
 									</div>
 									<div class="form-group">
-										<input class="form-control" type="hidden" name="grant_type" value="password">
+										<input class="form-control" type="text" name="dob" placeholder="dob">
+										<p style="color:red" th:if="${#fields.hasErrors('dob')}" th:error="*{dob}"></p>
 									</div>
 									<div class="form-group">
-										<button class="btn btn-primary btn-block" type="submit">Login</button>
+										<input class="form-control" type="text" name="password" placeholder="Password">
+										<p style="color:red" th:if="${#fields.hasErrors('password')}" th:error="*{password}"></p>
+									</div>
+									<div class="form-group mb-0">
+										<button class="btn btn-primary btn-block" type="submit">Register</button>
 									</div>
 								</form>
 								<!-- /Form -->
+								
 								<div class="login-or">
 									<span class="or-line"></span>
 									<span class="span-or">or</span>
 								</div>
-								  
-								<!-- Social Login -->
 								
+								<!-- Social Login -->
+
 								<!-- /Social Login -->
 								
-								<div class="text-center dont-have">Don’t have an account? <a href="/register">Register</a></div>
+								<div class="text-center dont-have">Already have an account? <a href="/login">Login</a></div>
 							</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-       	<script src="assets/js/jquery-3.2.1.min.js"></script>
+		<!-- /Main Wrapper -->
+		
+		<!-- jQuery -->
+        <script src="assets/js/jquery-3.2.1.min.js"></script>
 		
 		<!-- Bootstrap Core JS -->
         <script src="assets/js/popper.min.js"></script>
@@ -68,24 +81,8 @@
 		
 		<!-- Custom JS -->
 		<script src="assets/js/script.js"></script>
-</body>
-<script type="text/javascript">
-	$("#login_form").submit(function(e){
-		e.preventDefault();
-		var formData = jQuery(this).serialize();
-		$.ajax({
-			type: "post",
-			url:"oauth/token",
-			headers: {
-		        'Authorization':'Basic '+ btoa('devglan-client:devglan-secret'),
-		    },
-			data: formData,
-			dataType:"json",
-			success:function(data){
-				console.log(data);
-				window.location= 'store/'+data.access_token+'/'+data.refresh_token+'?access_token='+data.access_token;
-			}
-		})
-	})
-</script>
+		
+    </body>
+
+<!-- Mirrored from dreamguys.co.in/demo/ventura/register.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 21 Aug 2019 09:33:16 GMT -->
 </html>

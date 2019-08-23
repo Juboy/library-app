@@ -1,16 +1,25 @@
 package com.brains.libraryapp.models;
-
+	
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -28,6 +37,7 @@ public class User {
 	
 	@NotNull
 	@NotEmpty
+	@JsonIgnore
 	private String password;
 	
 	@Past
@@ -37,6 +47,15 @@ public class User {
 	@NotEmpty
 	private String address;
 	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable( 
+        name = "users_roles", 
+        joinColumns = @JoinColumn(name = "user_id"), 
+        inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> roles;
+	
+	private boolean isEnabled = true;
+	private boolean nonLocked = true;
 	
 	public User() {
 		super();
@@ -83,6 +102,31 @@ public class User {
 		this.address = address;
 	}
 
+	public boolean isEnabled() {
+		return isEnabled;
+	}
+
+	public void setEnabled(boolean isEnabled) {
+		this.isEnabled = isEnabled;
+	}
+
+	public boolean isNonLocked() {
+		return nonLocked;
+	}
+
+	public void setNonLocked(boolean nonLocked) {
+		this.nonLocked = nonLocked;
+	}
+	
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+
 
 	@Override
 	public int hashCode() {
@@ -91,7 +135,6 @@ public class User {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -109,7 +152,5 @@ public class User {
 			return false;
 		return true;
 	}
-	
-	
 	
 }

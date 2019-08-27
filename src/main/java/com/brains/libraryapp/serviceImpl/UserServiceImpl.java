@@ -1,7 +1,6 @@
 package com.brains.libraryapp.serviceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,9 +13,7 @@ import com.brains.libraryapp.repositories.UserRepository;
 import com.brains.libraryapp.services.UserService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -24,10 +21,14 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	@Autowired
 	private UserRepository userDao;
 
+	private Long userId;
+	
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 		User user = userDao.findByUsername(userId);
 		if(user == null){
 			throw new UsernameNotFoundException("Invalid username or password.");
+		}else {
+			this.userId = user.getId();
 		}
 		return new CustomUserDetails(user);
 	}
@@ -47,4 +48,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public User save(User user) {
         return userDao.save(user);
     }
+
+	public Long getUserId() {
+		return userId;
+	}
+
+
 }

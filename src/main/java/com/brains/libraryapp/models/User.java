@@ -40,7 +40,7 @@ public class User {
 	@JsonIgnore
 	private String password;
 	
-	@Past
+	@Past(message="date must be in the past")
 	private Date dob;
 	
 	@NotNull

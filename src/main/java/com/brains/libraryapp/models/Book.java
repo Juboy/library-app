@@ -26,10 +26,10 @@ public class Book {
 	private String author;
 	
 	@NotNull
-	private Long ISBN;
+	private Long isbn;
 	
 	@NotNull
-	@Min(1)
+	@Min(value= 1, message="You must add one copy at least")
 	private int totalNumber;
 			
 	public Book() {
@@ -37,10 +37,9 @@ public class Book {
 	}
 	
 	public Book(String bookName, String author, Long iSBN, int totalNumber) {
-		super();
 		this.bookName = bookName;
 		this.author = author;
-		this.ISBN = iSBN;
+		this.isbn = iSBN;
 		this.totalNumber = totalNumber;
 	}
 
@@ -62,11 +61,11 @@ public class Book {
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-	public Long getISBN() {
-		return ISBN;
+	public Long getIsbn() {
+		return isbn;
 	}
-	public void setISBN(Long iSBN) {
-		this.ISBN = iSBN;
+	public void setIsbn(Long iSBN) {
+		this.isbn = iSBN;
 	}
 	public int getTotalNumber() {
 		return totalNumber;

@@ -4,10 +4,10 @@
 		<meta charset="ISO-8859-1">
 		<title>Ventura - Register</title>
 
-		<link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
+		<link rel="shortcut icon" type="image/x-icon" href="/assets/img/favicon.png">
 
 		<!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
 		
 		<!-- Fontawesome CSS -->
         <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
@@ -23,7 +23,7 @@
             	<div class="container">
                 	<div class="loginbox">
                     	<div class="login-left">
-							<img class="img-fluid" src="assets/img/logo.png" alt="Logo">
+							<img class="img-fluid" src="/assets/img/logo.png" alt="Logo">
                         </div>
                         <div class="login-right">
 							<div class="login-right-wrap">
@@ -31,22 +31,22 @@
 								<p class="account-subtitle">Access to our dashboard</p>
 								
 								<!-- Form -->
-								<form th:object="${user}">
+								<form th:object="${user}" action="/register" method="post">
 									<div class="form-group">
-										<input class="form-control" type="text" name="username" placeholder="username">
-										<p style="color:red" th:if="${#fields.hasErrors('username')}" th:error="*{username}"></p>
+										<input class="form-control" type="text" name="username" placeholder="Username">
+										<p style="color:red; font-size:10px" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
 									</div>
 									<div class="form-group">
-										<input class="form-control" type="text" name="address" placeholder="address">
-										<p style="color:red" th:if="${#fields.hasErrors('address')}" th:error="*{address}"></p>
+										<input class="form-control" type="text" name="address" placeholder="Address">
+										<p style="color:red; font-size:10px" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></p>
 									</div>
 									<div class="form-group">
-										<input class="form-control" type="text" name="dob" placeholder="dob">
-										<p style="color:red" th:if="${#fields.hasErrors('dob')}" th:error="*{dob}"></p>
+										<input class="form-control" type="date" name="dob" placeholder="dob" required>
+										<p style="color:red; font-size:10px" th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}"></p>
 									</div>
 									<div class="form-group">
-										<input class="form-control" type="text" name="password" placeholder="Password">
-										<p style="color:red" th:if="${#fields.hasErrors('password')}" th:error="*{password}"></p>
+										<input class="form-control" type="password" name="password" placeholder="Password">
+										<p style="color:red; font-size:10px" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
 									</div>
 									<div class="form-group mb-0">
 										<button class="btn btn-primary btn-block" type="submit">Register</button>
@@ -73,14 +73,14 @@
 		<!-- /Main Wrapper -->
 		
 		<!-- jQuery -->
-        <script src="assets/js/jquery-3.2.1.min.js"></script>
+        <script src="/assets/js/jquery-3.2.1.min.js"></script>
 		
 		<!-- Bootstrap Core JS -->
-        <script src="assets/js/popper.min.js"></script>
-        <script src="assets/js/bootstrap.min.js"></script>
+        <script src="/assets/js/popper.min.js"></script>
+        <script src="/assets/js/bootstrap.min.js"></script>
 		
 		<!-- Custom JS -->
-		<script src="assets/js/script.js"></script>
+		<script src="/assets/js/script.js"></script>
 		
     </body>
 

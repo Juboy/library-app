@@ -8,50 +8,82 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.brains.libraryapp.models.CustomUserDetails;
+import com.brains.libraryapp.models.Role;
 import com.brains.libraryapp.models.User;
 import com.brains.libraryapp.repositories.UserRepository;
+import com.brains.libraryapp.services.RoleService;
 import com.brains.libraryapp.services.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, UserService {
 	
 	@Autowired
-	private UserRepository userDao;
-
-	private Long userId;
+	private UserRepository userRepository;
+	
+	@Autowired
+	private RoleService roleService;
+	
+	@Autowired
+	private HttpSession session;
 	
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-		User user = userDao.findByUsername(userId);
+		User user = userRepository.findByUsername(userId);
 		if(user == null){
 			throw new UsernameNotFoundException("Invalid username or password.");
 		}else {
-			this.userId = user.getId();
+			session.setAttribute("userId", user.getId());
 		}
 		return new CustomUserDetails(user);
 	}
 
 	public List<User> findAll() {
 		List<User> list = new ArrayList<>();
-		userDao.findAll().iterator().forEachRemaining(list::add);
+		userRepository.findAll().iterator().forEachRemaining(list::add);
 		return list;
 	}
 
 	@Override
 	public void delete(Long id) {
-		userDao.deleteById(id);
+		userRepository.deleteById(id);
 	}
 
 	@Override
     public User save(User user) {
-        return userDao.save(user);
+        return userRepository.save(user);
     }
-
+	
+	@Override
+	public User getLoggedInUser() {
+		return userRepository.findOneById((long) session.getAttribute("userId"));
+	}
+	
+	@Override
 	public Long getUserId() {
-		return userId;
+		return this.getLoggedInUser().getId();
 	}
 
+	@Override
+	public boolean isUser() {
+		Role userRole = roleService.getUserRole();
+		User user = userRepository.findOneById(this.getUserId());
+		return user.getRoles().contains(userRole);
+	}
+
+	@Override
+	public boolean isAdmin() {
+		Role userRole = roleService.getAdminRole();
+		User user = userRepository.findOneById(this.getUserId());
+		return user.getRoles().contains(userRole);
+	}
+
+	@Override
+	public User findOneUser(Long id) {
+		return userRepository.findOneById(id);
+	}
 
 }

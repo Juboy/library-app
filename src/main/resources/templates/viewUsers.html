@@ -122,10 +122,10 @@
 					<div class="page-header">
 						<div class="row">
 							<div class="col">
-								<h3 class="page-title">Book Inventory</h3>
+								<h3 class="page-title">Users</h3>
 								<ul class="breadcrumb">
-									<li class="breadcrumb-item"><a href="index-2.html">Dashboard</a></li>
-									<li class="breadcrumb-item active">View Books</li>
+									<li class="breadcrumb-item"><a href="index-2.html">Admin</a></li>
+									<li class="breadcrumb-item active">View users</li>
 								</ul>
 							</div>
 						</div>
@@ -137,12 +137,18 @@
 							<div class="card">
 								<div class="card-header">
 									<p class="card-text">
-										All Damn Books in the Inventory
+										All registered users
 									</p>
 								</div>
 								<div class="card-body">
 									<div th:if="${success != null}" class="alert alert-success alert-dismissible fade show" role="alert">
 										<a href="" class="alert-link" th:text="${success}">message</a>
+										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div th:if="${warning != null}" class="alert alert-warning alert-dismissible fade show" role="alert">
+										<strong>Error!</strong> <a href="" class="alert-link" th:text="${warning}">message</a>
 										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 											<span aria-hidden="true">&times;</span>
 										</button>
@@ -157,23 +163,23 @@
 										<table class="datatable table table-stripped">
 											<thead>
 												<tr>
-													<th>Book Title</th>
-													<th>Author</th>
-													<th>ISBN</th>
-													<th>Total Left</th>
-													<th>Rented out</th>
+													<th>Username</th>
+													<th>DOB</th>
+													<th>Address</th>
+													<th>Books checked out</th>
+													<th>Locked?</th>
 													<th>Action</th>
 												</tr>
 											</thead>
 											<tbody>
-												<tr th:each="book: ${allBooks}">
-													<td th:text="${book.bookName}"></td>
-													<td th:text="${book.author}"></td>
-													<td th:text="${book.isbn}"></td>
-													<td th:text="${book.totalNumber}"></td>
-													<td th:text="${counts.get(book)}"></td>
-													<td> <a th:href="@{/editBook/}+${book.id}+'?access_token='+${sess.accessToken}" title="Edit"><i class="fa fa-edit"></i></a>  |  
-														<a th:href="@{/deleteBook/}+${book.id}+'?access_token='+${sess.accessToken}" class="deleteButton" title="Delete"><i class="fa fa-times"></i></a> 
+												<tr th:each="user: ${allUsers}">
+													<td th:text="${user.username}"></td>
+													<td th:text="${user.dob}"></td>
+													<td th:text="${user.address}"></td>
+													<td th:text="${counts.get(user)}"></td>
+													<td th:text="${!user.nonLocked}"></td>
+													<td> <a th:if="${user.nonLocked}" th:href="@{/blockUser/}+${user.id}+'?access_token='+${sess.accessToken}"  class="blockButton" title="Lock user account"><i class="fa fa-times"></i></a>   
+														<a th:unless="${user.nonLocked}" th:href="@{/unBlockUser/}+${user.id}+'?access_token='+${sess.accessToken}" title="Unlock this user"><i class="fa fa-plus"></i></a> 
 													</td>
 												</tr>
 											</tbody>
@@ -208,8 +214,8 @@
 		<!-- Custom JS -->
 		<script  src="/assets/js/script.js"></script>
 		<script type="text/javascript">
-			$(".deleteButton").click(function(e){
-			    if(!confirm('Are you sure you want to delete?')){
+			$(".blockButton").click(function(e){
+			    if(!confirm('Are you sure you want to block this user?')){
 			        e.preventDefault();
 			    }
 			});

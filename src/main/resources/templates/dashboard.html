@@ -102,6 +102,13 @@
 								<a href="#"><i class="fe fe-users"></i> <span> Users </span> <span class="menu-arrow"></span></a>
 								<ul style="display: none;">
 									<li><a th:href="@{/viewAllUsers?access_token=}+${sess.accessToken}"> <i class="fe fe-file-zip"></i> View </a></li>
+									<li><a th:href="@{/viewBlockedUsers?access_token=}+${sess.accessToken}"> <i class="fe fe-file-zip"></i> Blocked Users </a></li>
+								</ul>
+							</li>
+							<li class="submenu">
+								<a href="#"><i class="fe fe-book"></i> <span> Log </span> <span class="menu-arrow"></span></a>
+								<ul style="display: none;">
+									<li><a th:href="@{/viewLog?access_token=}+${sess.accessToken}"> <i class="fe fe-file-zip"></i> View </a></li>
 								</ul>
 							</li>
 					

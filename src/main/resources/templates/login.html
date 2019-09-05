@@ -27,9 +27,8 @@
 							<div class="login-right-wrap">
 								<h1>Login</h1>
 								<p class="account-subtitle">Access to your dashboard</p>
-								<p th:if="${message =='useradded'}" class="account-subtitle" style="color:green; font-size:14px;"> User registered successfully. Login now</p>
-								
-								<!-- Form -->
+								<div class="err">
+								</div>
 								<form method="POST" id="login_form" class="form-horizontal">
 									<div class="form-group">
 										<input class="form-control" name="username" type="text" placeholder="Username">
@@ -71,6 +70,7 @@
 		<script src="/assets/js/script.js"></script>
 </body>
 <script type="text/javascript">
+	
 	$("#login_form").submit(function(e){
 		e.preventDefault();
 		var formData = jQuery(this).serialize();
@@ -85,6 +85,9 @@
 			success:function(data){
 				console.log(data);
 				window.location= '/store/'+data.access_token+'/'+data.refresh_token+'?access_token='+data.access_token;
+			},
+			error:function(err){
+				$(".err").html("<div class='alert alert-danger alert-dismissible fade show' role='alert'><strong>Error!</strong> <a href='' class='alert-link'>Cound't Login</a><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button></div>"); 
 			}
 		})
 	})

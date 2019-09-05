@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+		<meta charset="ISO-8859-1">
+		<title>Ventura - Log</title>
+
+		<link rel="shortcut icon" type="image/x-icon" href="/assets/img/favicon.png">
+
+		<!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+		
+		<!-- Fontawesome CSS -->
+        <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+		<link rel="stylesheet" href="/assets/css/feathericon.min.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+    	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" />
+		<!-- Main CSS -->
+        <link rel="stylesheet" href="/assets/css/style.css">
+        <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	    <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+	    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+	    <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+	    <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+	    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+	    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#example').DataTable({
+                dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'exportExcel',
+                    filename: 'Test_Excel',
+                    exportOptions: { modifier: { page: 'all'} }
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'exportExcel',
+                    filename: 'Test_Csv',
+                    exportOptions: { modifier: { page: 'all'} }
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'exportExcel',
+                    filename: 'Test_Pdf',
+                    exportOptions: { modifier: { page: 'all'} }
+                }]
+            });
+ 
+        });
+    </script>
+</head>
+<body>
+<div class="main-wrapper">
+		
+			<!-- Header -->
+            <div class="header">
+			
+				<!-- Logo -->
+                <div class="header-left">
+                    <a th:href="@{/dashboard?access_token=}+${sess.accessToken}" class="logo">
+						<img src="/assets/img/logo.png" alt="Logo">
+					</a>
+					<a th:href="@{/dashboard?access_token=}+${sess.accessToken}" class="logo logo-small">
+						<img src="/assets/img/logo-small.png" alt="Logo" width="30" height="30">
+					</a>
+                </div>
+				<!-- /Logo -->
+				
+				<a href="javascript:void(0);" id="toggle_btn">
+					<i class="fe fe-text-align-left"></i>
+				</a>
+				
+				<div class="top-nav-search">
+					<form>
+						<input type="text" class="form-control" placeholder="Search here">
+						<button class="btn" type="submit"><i class="fa fa-search"></i></button>
+					</form>
+				</div>
+				
+				<!-- Mobile Menu Toggle -->
+				<a class="mobile_btn" id="mobile_btn">
+					<i class="fa fa-bars"></i>
+				</a>
+				<!-- /Mobile Menu Toggle -->
+				
+				<!-- Header Right Menu -->
+				<ul class="nav user-menu">
+
+					<!-- User Menu -->
+					<li class="nav-item dropdown has-arrow">
+						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+							<span class="user-img"><img class="rounded-circle" src="/assets/img/profiles/avatar-01.jpg" width="31" alt="Ryan Taylor"></span>
+						</a>
+						<div class="dropdown-menu">
+							<div class="user-header">
+								<div class="avatar avatar-sm">
+									<img src="/assets/img/profiles/avatar-01.jpg" alt="User Image" class="avatar-img rounded-circle">
+								</div>
+								<div class="user-text">
+									<h6>Ryan Taylor</h6>
+									<p class="text-muted mb-0">Administrator</p>
+								</div>
+							</div>
+							<a class="dropdown-item" href="login.html">Logout</a>
+						</div>
+					</li>
+					<!-- /User Menu -->
+					
+				</ul>
+				<!-- /Header Right Menu -->
+				
+            </div>
+			<!-- /Header -->
+			
+			<!-- Sidebar -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-inner slimscroll">
+					<div id="sidebar-menu" class="sidebar-menu">
+						<ul>
+							<li class="menu-title"> 
+								<span>Main</span>
+							</li>
+							<li> 
+								<a th:href="@{/dashboard?access_token=}+${sess.accessToken}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
+							</li>
+							<li class="submenu">
+								<a href="#"><i class="fe fe-document"></i> <span> Books </span> <span class="menu-arrow"></span></a>
+								<ul style="display: none;">
+									<li><a th:href="@{/addBook?access_token=}+${sess.accessToken}"> <i class="fe fe-plus"></i> Add </a></li>
+									<li class="active"><a th:href="@{/viewAllBooks?access_token=}+${sess.accessToken}"> <i class="fe fe-file-zip"></i> View </a></li>
+								</ul>
+							</li>
+							<li class="submenu">
+								<a href="#"><i class="fe fe-users"></i> <span> Users </span> <span class="menu-arrow"></span></a>
+								<ul style="display: none;">
+									<li><a th:href="@{/viewAllUsers?access_token=}+${sess.accessToken}"> <i class="fe fe-file-zip"></i> View </a></li>
+								</ul>
+							</li>
+							<li class="submenu">
+								<a href="#"><i class="fe fe-book"></i> <span> Log </span> <span class="menu-arrow"></span></a>
+								<ul style="display: none;">
+									<li><a th:href="@{/viewLog?access_token=}+${sess.accessToken}"> <i class="fe fe-file-zip"></i> View </a></li>
+								</ul>
+							</li>
+					
+							<li> 
+								<a th:href="@{/logout}"><i class="fa fa-sign-out"></i> <span>Logout</span></a>
+							</li>
+						</ul>
+					</div>
+                </div>
+            </div>
+			<!-- /Sidebar -->
+			
+			<!-- Page Wrapper -->
+            <div class="page-wrapper">
+		 	   <div class="content container-fluid">
+
+					<!-- Page Header -->
+					<div class="page-header">
+						<div class="row">
+							<div class="col">
+								<h3 class="page-title">Users</h3>
+								<ul class="breadcrumb">
+									<li class="breadcrumb-item"><a href="index-2.html">Admin</a></li>
+									<li class="breadcrumb-item active">View Log</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<!-- /Page Header -->
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="card">
+								<div class="card-header">
+									<p class="card-text">
+										View Log By: 
+									</p>
+									<div style="color:#fff">
+										<a class="btn btn-primary showAction">Action</a>
+										<a class="btn btn-primary showTime">Time</a>
+										<a class="btn btn-primary showBook">Book</a>
+									</div>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-sm-4 byTime">
+											<h6>By Time</h6>
+											<form th:action="@{/logTimestamp?access_token=}+${sess.accessToken}" method="post">
+												<div class="form-group">
+													<label>From</label>
+													<input class="form-control" type="date" name="from" placeholder="From" required>
+												</div>
+												<div class="form-group">
+													<label>To</label>
+													<input class="form-control" type="date" name="to" placeholder="To" required>
+												</div>
+												<div class="form-group mb-0">
+													<button class="btn btn-primary btn-block" type="submit"><i class="fa fa-search"></i> View Log</button>
+												</div>
+											</form>
+										</div>
+										<div class="col-sm-4 byAction">
+											<h6>By Action</h6>
+											<form th:action="@{/logAction?access_token=}+${sess.accessToken}" method="post">
+												<div class="form-group">
+													<label>Action</label>
+													<select class="form-control" name="action">
+														<option value="Check Out">Check Out</option>
+														<option value="Check In">Check In</option>
+													</select>
+												</div>
+												<div class="form-group mb-0">
+													<button class="btn btn-primary btn-block" type="submit"><i class="fa fa-search"></i> View Log</button>
+												</div>
+											</form>
+										</div>
+										<div class="col-sm-4 byBook">
+											<h6>By Book</h6>
+											<form th:action="@{/logBook?access_token=}+${sess.accessToken}" method="post">
+												<div class="form-group">
+													<label>Books</label>
+													<select class="form-control" name="book">
+														<option th:each="bookk: ${books}" th:value="${bookk.id}" th:text="${bookk.bookName}"></option>
+													</select>
+												</div>
+												<div class="form-group mb-0">
+													<button class="btn btn-primary btn-block" type="submit"><i class="fa fa-search"></i> View Log</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="card">
+								<div class="card-header">
+									<p th:if="${query != null}" th:text="${query}" class="card-text">
+										Dummy!!!
+									</p>
+									<p th:unless="${query != null}" class="card-text">
+										All Logs
+									</p>
+								</div>
+								<div class="card-body">
+									<div th:if="${success != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+										<a href="" class="alert-link" th:text="${success}">message</a>
+										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div th:if="${warning != null}" class="alert alert-warning alert-dismissible fade show" role="alert">
+										<strong>Error!</strong> <a href="" class="alert-link" th:text="${warning}">message</a>
+										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div th:if="${error != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+										<strong>Error!</strong> <a href="" class="alert-link" th:text="${error}">message</a>
+										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="table-responsive">
+										<table id="example" class="table table-stripped">
+											<thead>
+												<tr>
+													<th>User Name</th>
+													<th>Action</th>
+													<th>Book Name</th>
+													<th>TimeStamp</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="log: ${logs}">
+													<td th:text="${log.user.username}"></td>
+													<td th:text="${log.action}"></td>
+													<td th:text="${log.book.bookName}"></td>
+													<td th:text="${log.timestamp}"></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				
+				</div>	
+            </div>    
+			<!-- /Page Wrapper -->
+		
+        </div>
+		<!-- /Main Wrapper -->
+	
+		<!-- Bootstrap Core JS -->
+        <script src="/assets/js/popper.min.js"></script>
+        <script src="/assets/js/bootstrap.min.js"></script>
+		
+		<!-- Slimscroll JS -->
+        <script src="/assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+		
+		  
+		
+		
+		<!-- Custom JS -->
+		<script  src="/assets/js/script.js"></script>
+		<script type="text/javascript">
+			$(".byAction").hide();
+			$(".byTime").hide();
+			$(".byBook").hide();
+			$(".showAction").click(function(e){
+				$(".byAction").toggle(1000);
+			});
+			
+			$(".showTime").click(function(e){
+				$(".byTime").toggle(1000);
+			});
+			
+			$(".showBook").click(function(e){
+				$(".byBook").toggle(1000);
+			});
+		</script>
+		
+</body>
+
+</html>

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 		<meta charset="ISO-8859-1">
-		<title>Ventura - All Book</title>
+		<title>Ventura - All Books</title>
 
 		<link rel="shortcut icon" type="image/x-icon" href="/assets/img/favicon.png">
 
@@ -12,8 +12,8 @@
 		<!-- Fontawesome CSS -->
         <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
 		<link rel="stylesheet" href="/assets/css/feathericon.min.css">
-		
 		<link rel="stylesheet" href="/assets/plugins/datatables/datatables.min.css">
+		<link rel="stylesheet" href="/assets/plugins/morris/morris.css">
 		<!-- Main CSS -->
         <link rel="stylesheet" href="/assets/css/style.css">
 </head>
@@ -25,10 +25,10 @@
 			
 				<!-- Logo -->
                 <div class="header-left">
-                    <a th:href="@{/dashboard?access_token=}+${sess.accessToken}" class="logo">
+                    <a th:href="@{/user-dashboard?access_token=}+${sess.accessToken}" class="logo">
 						<img src="/assets/img/logo.png" alt="Logo">
 					</a>
-					<a th:href="@{/dashboard?access_token=}+${sess.accessToken}" class="logo logo-small">
+					<a th:href="@{/user-dashboard?access_token=}+${sess.accessToken}" class="logo logo-small">
 						<img src="/assets/img/logo-small.png" alt="Logo" width="30" height="30">
 					</a>
                 </div>
@@ -66,7 +66,7 @@
 								</div>
 								<div class="user-text">
 									<h6>Ryan Taylor</h6>
-									<p class="text-muted mb-0">Administrator</p>
+									<p class="text-muted mb-0">User</p>
 								</div>
 							</div>
 							<a class="dropdown-item" href="login.html">Logout</a>
@@ -88,20 +88,20 @@
 							<li class="menu-title"> 
 								<span>Main</span>
 							</li>
-							<li> 
-								<a th:href="@{/dashboard?access_token=}+${sess.accessToken}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
+							<li class="active"> 
+								<a th:href="@{/user/dashboard?access_token=}+${sess.accessToken}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
 							</li>
 							<li class="submenu">
 								<a href="#"><i class="fe fe-document"></i> <span> Books </span> <span class="menu-arrow"></span></a>
 								<ul style="display: none;">
-									<li><a th:href="@{/addBook?access_token=}+${sess.accessToken}"> <i class="fe fe-plus"></i> Add </a></li>
-									<li class="active"><a th:href="@{/viewAllBooks?access_token=}+${sess.accessToken}"> <i class="fe fe-file-zip"></i> View </a></li>
+									<li><a th:href="@{/user/viewAllBooks?access_token=}+${sess.accessToken}"> <i class="fe fe-file-zip"></i> All Library Books </a></li>
+									<li><a th:href="@{/user/borrowed?access_token=}+${sess.accessToken}"> <i class="fe fe-minus"></i> Checked out Books </a></li>
 								</ul>
 							</li>
 							<li class="submenu">
-								<a href="#"><i class="fe fe-users"></i> <span> Users </span> <span class="menu-arrow"></span></a>
+								<a href="#"><i class="fe fe-info"></i> <span> Log </span> <span class="menu-arrow"></span></a>
 								<ul style="display: none;">
-									<li><a th:href="@{/viewAllUsers?access_token=}+${sess.accessToken}"> <i class="fe fe-file-zip"></i> View </a></li>
+									<li><a th:href="@{/user/log/?access_token=}+${sess.accessToken}"> <i class="fe fe-info"></i> View </a></li>
 								</ul>
 							</li>
 					
@@ -116,22 +116,21 @@
 			
 			<!-- Page Wrapper -->
             <div class="page-wrapper">
-				            <div class="content container-fluid">
-
+			
+                <div class="content container-fluid">
+					
 					<!-- Page Header -->
 					<div class="page-header">
 						<div class="row">
-							<div class="col">
-								<h3 class="page-title">Book Inventory</h3>
+							<div class="col-sm-12">
+								<h3 class="page-title" th:text="Welcome +' ' +${user.username}"></h3>
 								<ul class="breadcrumb">
-									<li class="breadcrumb-item"><a href="index-2.html">Dashboard</a></li>
-									<li class="breadcrumb-item active">View Books</li>
+									<li class="breadcrumb-item active">Dashboard</li>
 								</ul>
 							</div>
 						</div>
 					</div>
 					<!-- /Page Header -->
-					
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="card">
@@ -143,6 +142,12 @@
 								<div class="card-body">
 									<div th:if="${success != null}" class="alert alert-success alert-dismissible fade show" role="alert">
 										<a href="" class="alert-link" th:text="${success}">message</a>
+										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div th:if="${warning != null}" class="alert alert-warning alert-dismissible fade show" role="alert">
+										<strong>Error!</strong> <a href="" class="alert-link" th:text="${warning}">message</a>
 										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 											<span aria-hidden="true">&times;</span>
 										</button>
@@ -161,7 +166,6 @@
 													<th>Author</th>
 													<th>ISBN</th>
 													<th>Total Left</th>
-													<th>Rented out</th>
 													<th>Action</th>
 												</tr>
 											</thead>
@@ -171,10 +175,7 @@
 													<td th:text="${book.author}"></td>
 													<td th:text="${book.isbn}"></td>
 													<td th:text="${book.totalNumber}"></td>
-													<td th:text="${counts.get(book)}"></td>
-													<td> <a th:href="@{/editBook/}+${book.id}+'?access_token='+${sess.accessToken}" title="Edit"><i class="fa fa-edit"></i></a>  |  
-														<a th:href="@{/deleteBook/}+${book.id}+'?access_token='+${sess.accessToken}" class="deleteButton" title="Delete"><i class="fa fa-times"></i></a> 
-													</td>
+													<td> <a th:href="@{/user/checkout/}+${book.id}+'?access_token='+${sess.accessToken}" title="Check out"><i class="fa fa-shopping-cart"></i></a></td>
 												</tr>
 											</tbody>
 										</table>
@@ -183,9 +184,8 @@
 							</div>
 						</div>
 					</div>
-				
-				</div>	
-            </div>    
+				</div>			
+			</div>
 			<!-- /Page Wrapper -->
 		
         </div>
@@ -201,19 +201,15 @@
 		<!-- Slimscroll JS -->
         <script src="/assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 		
-		  
-		<script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+		<script src="/assets/plugins/raphael/raphael.min.js"></script>    
+		<script src="/assets/plugins/morris/morris.min.js"></script>  
+		<script src="/assets/js/chart.morris.js"></script>
+				<script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
 		<script src="/assets/plugins/datatables/datatables.min.js"></script>
+		
 		
 		<!-- Custom JS -->
 		<script  src="/assets/js/script.js"></script>
-		<script type="text/javascript">
-			$(".deleteButton").click(function(e){
-			    if(!confirm('Are you sure you want to delete?')){
-			        e.preventDefault();
-			    }
-			});
-		</script>
 		
 </body>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>

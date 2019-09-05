@@ -1,40 +1,29 @@
 package com.brains.libraryapp.controllers;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.brains.libraryapp.TokenInfo;
 import com.brains.libraryapp.models.Book;
-import com.brains.libraryapp.models.Role;
+import com.brains.libraryapp.models.Borrowed;
+import com.brains.libraryapp.models.Log;
 import com.brains.libraryapp.models.User;
 import com.brains.libraryapp.services.BookService;
-import com.brains.libraryapp.services.RoleService;
+import com.brains.libraryapp.services.BorrowedService;
+import com.brains.libraryapp.services.LogService;
 import com.brains.libraryapp.services.UserService;
 
-
+@RequestMapping("/user")
 @Controller
 public class UserController {
 	@Autowired
@@ -44,162 +33,112 @@ public class UserController {
 	private UserService userService;
 	
 	@Autowired
-	private RoleService roleService;
-	
-	@Autowired
 	private BookService bookService;
 	
+	@Autowired
+	private LogService logService;
 	
-	@InitBinder
-	protected void binder(WebDataBinder bind) {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		bind.registerCustomEditor(Date.class, "dob", new CustomDateEditor(format, false));
-//		bind.registerCustomEditor(String.class, "bookName", new TitlePropertyEditor());
-		
-	}
-		
-	@RequestMapping(value="/login")
-	public ModelAndView loginPage() {
-		ModelAndView modelandview = new ModelAndView("login");
-		return modelandview;
-	}
+	@Autowired
+	private BorrowedService borrowedService;
 	
-	@RequestMapping(value="/login/{var}")
-	public ModelAndView loginPage1(@PathVariable("var") String message) {
-		ModelAndView modelandview = new ModelAndView("login");
-		modelandview.addObject("message", message);
-		return modelandview;
+	@RequestMapping("/dashboard")
+	public ModelAndView userDashboard() {
+		List<Book> books = bookService.findAll();
+		ModelAndView m = new ModelAndView("userDashboard");
+		m.addObject("allBooks", books);
+		return m;
 	}
-	
-	@RequestMapping(value="/register")
-	public ModelAndView registrationPage(@ModelAttribute("user") User user) {
-		return new ModelAndView("register");
-	}
-	
-	@RequestMapping(value="/register", method=RequestMethod.POST)
-	public ModelAndView registerUser(@Valid User user, BindingResult result) throws Exception {
-		if(result.hasErrors()) {
-			ModelAndView m = new ModelAndView("register");
-			m.addObject("user", user);
-			return m;
-		}
-		if(user!=null) {
-			user.setUsername(user.getUsername().trim());
-			user.setNonLocked(true);
-			user.setEnabled(true);
-			user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-			Set<Role> roles = new HashSet<Role>();
-			roles.add(roleService.getUserRole());
-			user.setRoles(roles);
-			User added = userService.save(user);
-			if(added!=null) {
-				return new ModelAndView("redirect:/login/useradded");
-			}
-		}
-		return new ModelAndView();
-	}
-	
-	@RequestMapping(value="/store/{accessToken}/{refreshToken}")
-	public ModelAndView getUsers(@PathVariable Map<String,String> pathVars) throws Exception {
-		String accessToken = pathVars.get("accessToken");
-		String refreshToken = pathVars.get("refreshToken");
-		TokenInfo tokenn = new TokenInfo(accessToken, refreshToken); 
-		session.setAttribute("toks", tokenn);
-		TokenInfo info = (TokenInfo) session.getAttribute("toks");
-		return new ModelAndView("redirect:/dashboard?access_token="+info.getAccessToken());
-	}
-	
+
 	@ModelAttribute
 	public void addCommonObjects(Model model1) {
 		if(session.getAttribute("toks")!=null) {
+			Long id = userService.getUserId();
+			User user = userService.findOneUser(id);
 			TokenInfo info = (TokenInfo) session.getAttribute("toks");
 			model1.addAttribute("sess", info);
+			model1.addAttribute("user", user);
 		}
-	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping("/dashboard")
-	public ModelAndView dash() {
-		ModelAndView modelandview = new ModelAndView("dashboard");
-//		modelandview.addObject("user", principal.getName());
-		return modelandview;
-	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping("/addBook")
-	public ModelAndView addBookPage(Book book){
-		ModelAndView modelandview = new ModelAndView("addBookPage");
-		return modelandview;
-	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value="/addBook", method=RequestMethod.POST)
-	public ModelAndView addBook(@Valid Book book, BindingResult result){
-		if(result.hasErrors()) {
-			ModelAndView m = new ModelAndView("addBookPage", "error", "There are errors in the form");
-			return m;
-		}
-		if(book!=null) {
-			Book isbnBook = bookService.isIsbnExist(book.getIsbn());
-			if(isbnBook!=null) {
-				ModelAndView m = new ModelAndView("addBookPage", "error", "ISBN belongs to '"+isbnBook.getBookName()+"' already");
-				return m;
-			}
-			book.setBookName(book.getBookName().trim());
-			Book added = bookService.save(book);
-			if(added!=null) {
-				return new ModelAndView("addBookPage", "success",added.getTotalNumber()+" copies of '"+ added.getBookName()+"' has been successfully added to inventory");
-			}
-		}
-		return new ModelAndView();
 	}
 	
 	@RequestMapping(value="/viewAllBooks")
-	public ModelAndView viewBooks(@Valid Book book, BindingResult result){
-		Iterable<Book> iBooks = bookService.findAll();
-		List<Book> myBooks = new ArrayList<Book>();
-		for(Book eachbook : iBooks) {
-			myBooks.add(eachbook);
-		}
-		ModelAndView modelandview = new ModelAndView("viewBooks");
+	public ModelAndView viewBooks(){
+		List<Book> myBooks = bookService.findAll();
+		ModelAndView modelandview = new ModelAndView("userViewBooks");
 		modelandview.addObject("allBooks", myBooks);
 		return modelandview;
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value="/editBook/{id}")
-	public ModelAndView editBookPage(@PathVariable("id") int id) {
-		Book book = bookService.getBookById((long) id);
-		ModelAndView m = new ModelAndView("editBook");
-		m.addObject("book", book);
-		return m;
-	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value="/editBook/{id}", method=RequestMethod.POST)
-	public ModelAndView editBook(@Valid Book book, BindingResult result) {
+	@RequestMapping(value="/checkout/{id}")
+	public ModelAndView checkBookOut(@PathVariable("id") int id, RedirectAttributes redir){
 		TokenInfo info = (TokenInfo) session.getAttribute("toks");
-		if(result.hasErrors()) {
-			ModelAndView m = new ModelAndView("editBook");
-			m.addObject("book", book);
-			m.addObject("error", "There are some in your form");
+		Book book = bookService.getBookById((long)id);
+		ModelAndView m = new ModelAndView("redirect:/user/viewAllBooks?access_token="+info.getAccessToken());
+		if(book.getTotalNumber()<=1) {
+			redir.addFlashAttribute("error", "All copies of '"+book.getBookName()+"' have been checked out at the moment");
 			return m;
 		}
-		if(book!=null) {
-			Book isbnBook = bookService.isIsbnExist(book.getIsbn());
-			if(isbnBook!=null) {
-				if(book.getId()!=isbnBook.getId()) {
-					ModelAndView m = new ModelAndView("editBook", "error", "ISBN belongs to '"+isbnBook.getBookName()+"' already");
-					return m;
-				}
-			}
-			book.setBookName(book.getBookName().trim());
-			Book added = bookService.save(book);
-			if(added!=null) {
-				return new ModelAndView("redirect:/viewAllBooks?access_token="+info.getAccessToken(), "success", added.getBookName()+"' has been successfully modified");
+		if(borrowedService.hasUserBorrowedBook(userService.getLoggedInUser(), book)) {
+			redir.addFlashAttribute("error", "You have already checked out this book. Kindly check ur checked out books");
+			return m;
+		}
+		Borrowed added = borrowedService.borrowBook(userService.getLoggedInUser(), book);
+		Log addedLog = logService.add(book, userService.getLoggedInUser(), "Check Out");
+		if(added!=null) {
+			if(addedLog!=null) {
+				redir.addFlashAttribute("success", "You have successfully checked out this book");
+				return m;
+			}else {
+				redir.addFlashAttribute("warning", "Book checked out successfully but couldn't be added to log");
+				return m;
 			}
 		}
-		return new ModelAndView();
+		redir.addFlashAttribute("error", "Could't Check out. Meet the libarian for further questions");
+		return m;
+		
 	}
 	
+	@RequestMapping(value="/borrowed")
+	public ModelAndView viewBorrowedBooks(Borrowed books) {
+		List<Book> myBooks = borrowedService.findBookByUser(userService.getLoggedInUser());
+		ModelAndView modelandview = new ModelAndView("userViewBorrowedBooks");
+		modelandview.addObject("allBooks", myBooks);
+		return modelandview;
+		
+	}
+	
+	@RequestMapping(value="/checkin/{id}")
+	public ModelAndView checkBookin(@PathVariable("id") int id, RedirectAttributes redir){
+		TokenInfo info = (TokenInfo) session.getAttribute("toks");
+		Book book = bookService.getBookById((long)id);
+		ModelAndView m = new ModelAndView("redirect:/user/borrowed?access_token="+info.getAccessToken());
+		if(!borrowedService.hasUserBorrowedBook(userService.getLoggedInUser(), book)) {
+			redir.addFlashAttribute("error", "This book is not in the list of your checked out book");
+			return m;
+		}
+		boolean removed = borrowedService.deleteBorrowed(userService.getLoggedInUser(), book);
+		Log addedLog = logService.add(book, userService.getLoggedInUser(), "Check In");
+		if(removed) {
+			if(addedLog!=null) {
+				redir.addFlashAttribute("success", "You have successfully checked in this book");
+				return m;
+			}else {
+				redir.addFlashAttribute("warning", "Book checked in successfully but couldn't be added to log");
+				return m;
+			}
+			
+		}
+		redir.addFlashAttribute("error", "Could't Check in. Meet the libarian for further questions");
+		return m;
+		
+	}
+	
+	@RequestMapping(value="/log")
+	public ModelAndView viewLog() {
+		List<Log> log = logService.getAllByUser(userService.getLoggedInUser());
+		System.out.println(log.toString());
+		ModelAndView m =  new ModelAndView("userLog");
+		m.addObject("log", log);
+		return m;
+	}
 }
+

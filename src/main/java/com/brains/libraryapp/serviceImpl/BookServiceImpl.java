@@ -1,6 +1,9 @@
 package com.brains.libraryapp.serviceImpl;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +39,13 @@ public class BookServiceImpl implements BookService{
 	}
 
 	@Override
-	public Iterable<Book> findAll() {
+	public List<Book> findAll() {
 		Iterable<Book> books = bookRepository.findAll();
-		return books;
+		List<Book> myBooks = new ArrayList<Book>();
+		for(Book eachbook : books) {
+			myBooks.add(eachbook);
+		}
+		return myBooks;
 	}
 
 	@Override

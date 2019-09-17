@@ -26,10 +26,7 @@ public class LogServiceImpl implements LogService{
 	
 	@Override
 	public List<Log> getAllByUser(User user) {
-		for(Object m:logRepository.findAllByUser(user)) {
-			System.out.println(m.toString());
-		}
-		return logRepository.findAllByUser(user);
+		return logRepository.findAllByUserOrderByTimestampDesc(user);
 	}
 
 	@Override
@@ -52,6 +49,11 @@ public class LogServiceImpl implements LogService{
 		List<Log> list = new ArrayList<>();
 		logRepository.findAll().iterator().forEachRemaining(list::add);
 		return list;
+	}
+
+	@Override
+	public List<Log> getAllByUserWithinTime(User user, Date startDate, Date endDate) {
+		return logRepository.findAllByTimestampBetweenAndUser(startDate, endDate, user);
 	}
 	
 }

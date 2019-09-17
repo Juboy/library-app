@@ -1,6 +1,7 @@
 package com.brains.libraryapp.services;
 
 
+import java.security.Principal;
 import java.util.List;
 
 import com.brains.libraryapp.models.User;
@@ -15,4 +16,7 @@ public interface UserService {
     boolean isUser();
     boolean isAdmin();
     User findOneUser(Long id);
+    
+    boolean userExists(String username);
+    User getUserByPrincipal(Principal principal);
 }

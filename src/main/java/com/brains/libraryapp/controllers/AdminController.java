@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2RefreshToken;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -59,6 +62,9 @@ public class AdminController {
 	
 	@Autowired
 	private LogService logService;
+	
+	@Autowired
+	private TokenStore tokenStore;
 	
 	@InitBinder
 	protected void binder(WebDataBinder bind) {
@@ -347,4 +353,26 @@ public class AdminController {
 		m.addObject("success", "Logs for "+book.getBookName());
 		return m;
 	}
+	
+	@RequestMapping(value="/log-out")
+	public ModelAndView logout(@RequestParam("access_token") String token) {
+		ModelAndView modelandview = new ModelAndView("register");
+		System.out.println(token);
+		try {
+			OAuth2AccessToken oAuth2AccessToken = tokenStore.readAccessToken(token);
+			if (oAuth2AccessToken != null) {
+				OAuth2RefreshToken oAuth2RefreshToken = oAuth2AccessToken.getRefreshToken();
+				tokenStore.removeAccessToken(oAuth2AccessToken);
+				if (oAuth2RefreshToken != null) {
+					tokenStore.removeRefreshToken(oAuth2RefreshToken);
+					return new ModelAndView("redirect:/login");
+				}
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error while logging out because: " + e.getMessage());
+		}
+		return modelandview;
+	}
+
 }

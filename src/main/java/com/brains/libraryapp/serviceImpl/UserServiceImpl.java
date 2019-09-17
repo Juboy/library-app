@@ -14,6 +14,7 @@ import com.brains.libraryapp.repositories.UserRepository;
 import com.brains.libraryapp.services.RoleService;
 import com.brains.libraryapp.services.UserService;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +85,17 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	@Override
 	public User findOneUser(Long id) {
 		return userRepository.findOneById(id);
+	}
+
+	@Override
+	public boolean userExists(String username) {
+		return userRepository.existsByUsername(username);
+	}
+
+	@Override
+	public User getUserByPrincipal(Principal principal) {
+		User user = userRepository.findByUsername(principal.getName());
+		return user;
 	}
 
 }

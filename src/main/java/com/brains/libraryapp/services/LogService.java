@@ -14,5 +14,5 @@ public interface LogService {
 	List<Log> getAllByAction(String action);
 	List<Log> findAll();
 	List<Log> getAllWithinTime(Date startTime, Date endTime);
-	
+	List<Log> getAllByUserWithinTime(User user, Date startDate, Date endDate);
 }
